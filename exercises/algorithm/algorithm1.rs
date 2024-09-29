@@ -2,13 +2,12 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
-#[derive(Debug)]
+#[derive(Debug,Copy,Clone)]
 struct Node<T> {
     val: T,
     next: Option<NonNull<Node<T>>>,
@@ -22,7 +21,7 @@ impl<T> Node<T> {
         }
     }
 }
-#[derive(Debug)]
+#[derive(Debug,Copy,Clone)]
 struct LinkedList<T> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
@@ -43,7 +42,8 @@ impl<T> LinkedList<T> {
             end: None,
         }
     }
-
+}
+impl <T: std::cmp::PartialOrd + PartialOrd + Clone> LinkedList<T>{
     pub fn add(&mut self, obj: T) {
         let mut node = Box::new(Node::new(obj));
         node.next = None;
@@ -72,12 +72,31 @@ impl<T> LinkedList<T> {
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
-        }
+        let mut merged = LinkedList::new();
+        let mut la_iter = list_a.start;
+        let mut lb_iter = list_b.start;
+        
+        while let (Some(a_node),Some(b_node))=(la_iter,lb_iter){
+            let a_val = unsafe{&(*a_node.as_ptr()).val};
+            let b_val = unsafe{&(*b_node.as_ptr()).val};
+            if a_val <= b_val{
+                merged.add(a_val.clone());
+                la_iter = unsafe{(*a_node.as_ptr()).next};
+            }else {  
+                merged.add(b_val.clone());  
+                lb_iter = unsafe { (*b_node.as_ptr()).next };  
+            }          
 	}
+    while let Some(node) = la_iter {  
+        merged.add(unsafe { (*node.as_ptr()).val.clone() });  
+        la_iter = unsafe { (*node.as_ptr()).next };  
+    }  
+    while let Some(node) = lb_iter {  
+        merged.add(unsafe { (*node.as_ptr()).val.clone() });  
+        lb_iter = unsafe { (*node.as_ptr()).next };  
+    }  
+    merged
+    }
 }
 
 impl<T> Display for LinkedList<T>

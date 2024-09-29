@@ -31,8 +31,13 @@ impl<T> Stack<T> {
 		self.size += 1;
 	}
 	fn pop(&mut self) -> Option<T> {
-		// TODO
+		if 0== self.size {
 		None
+	}else{
+		let num = self.vec[size-1];
+		self.size-=1;
+		Some(num)
+	}
 	}
 	fn peek(&self) -> Option<&T> {
 		if 0 == self.size {
